@@ -63,8 +63,9 @@ class Capybara::Driver::Webkit
     private
 
     def start_server
+      @port = rand(1000) + 9000
       server_path = File.expand_path("../../../../../bin/webkit_server", __FILE__)
-      @pid = fork { exec(server_path) }
+      @pid = fork { exec(server_path, @port.to_s) }
       at_exit { Process.kill("INT", @pid) }
     end
 
@@ -76,7 +77,7 @@ class Capybara::Driver::Webkit
     end
 
     def attempt_connect
-      @socket = @socket_class.open("localhost", 9200)
+      @socket = @socket_class.open("localhost", @port)
     rescue Errno::ECONNREFUSED
     end
 
